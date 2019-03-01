@@ -1,0 +1,21 @@
+{
+  "name": "nasa-wallpaper",
+  "version": "0.0.1",
+  "description": "Set up the Nasa Picture of the Day as your wallpaper",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "wallpaper",
+    "nasa"
+  ],
+  "author": "statox (me@statox.fr)",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "got": "^9.6.0",
+    "wallpaper": "^4.2.0"
+  }
+}
