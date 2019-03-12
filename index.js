@@ -6,7 +6,7 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 const https = require('https');
 
-const dir = '/home/afabre/.wallpaper/';
+const dir = (process.env.HOME) ? `${process.env.HOME}/.wallpaper/` : './.wallpaper';
 
 const removeOldPictures = () => {
     const rmCommand = `find ${dir} -mtime +3 -delete`
