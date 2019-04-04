@@ -4,6 +4,7 @@
   "description": "Set up the Nasa Picture of the Day as your wallpaper",
   "main": "index.js",
   "scripts": {
+    "post-install": "chmod +x ./post-install.sh && ./post-install.sh",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
