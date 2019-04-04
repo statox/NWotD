@@ -79,7 +79,11 @@ const setWallpaper = (imagePath) => {
 };
 
 const linkSplitter = data => {
-    return data.split('<a href="image')[1].split('"')[0];
+    try {
+        return data.split('<a href="image')[1].split('"')[0];
+    } catch (error) {
+        return undefined;
+    }
 };
 
 // Download image and set as wallpaper
@@ -110,6 +114,9 @@ got('https://apod.nasa.gov/apod/').then(res => {
     const $ = cheerio.load(res.body);
     const aboutImage = `${$('center').eq(1).text().split('\n')[1].trim().split(' ').join('-')}.jpg`;
     const link = linkSplitter(res.body);
+    if (!link) {
+        console.log('Can t find an image, aborting', fullUrl);
+    }
     const fullUrl = `https://apod.nasa.gov/apod/image${link}`;
 
     console.log("downloading", fullUrl);
