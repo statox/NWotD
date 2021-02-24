@@ -24,10 +24,8 @@ const removeOldPictures = () => {
 const setWallpaper = (imagePath) => {
     console.log("setting wallpaper");
 
-    const desktopCommand = `gsettings set org.gnome.desktop.background picture-uri \'file:///${imagePath}\'`;
-    const desktopSettingsCommand = `gsettings set org.gnome.desktop.background picture-options \'stretched\'`;
-    const screensaverCommand = `gsettings set org.gnome.desktop.screensaver picture-uri \'file:///${imagePath}\'`;
-    const screensaverSettingsCommand = `gsettings set org.gnome.desktop.screensaver picture-options \'stretched\'`;
+    const desktopCommand = `feh --bg-scale ${imagePath}`
+    const copyImage = `cp ${imagePath} /home/afabre/.wallpaper/today_wallpaper`;
 
     async.auto({
         desktopWallpaper: (cb) => exec(desktopCommand, (error, _stdout, _stderr) => {
@@ -39,31 +37,13 @@ const setWallpaper = (imagePath) => {
             console.log("Desktop wallpaper set successfully");
             return cb();
         }),
-        desktopSetting: (cb) => exec(desktopSettingsCommand, (error, _stdout, _stderr) => {
-            if (error) {
-                console.log("error while setting desktop wallpaper options");
-                console.log(error);
-                return cb(error);
-            }
-            console.log("Desktop wallpaper options set successfully");
-            return cb();
-        }),
-        screensaverWallpaper: (cb) => exec(screensaverCommand, (error, _stdout, _stderr) => {
+        copyImage: (cb) => exec(copyImage, (error, _stdout, _stderr) => {
             if (error) {
                 console.log("error while setting screensaver wallpaper");
                 console.log(error);
                 return cb(error);
             }
             console.log("Screensaver wallpaper set successfully");
-            return cb();
-        }),
-        screensaverSettings: (cb) => exec(screensaverSettingsCommand, (error, _stdout, _stderr) => {
-            if (error) {
-                console.log("error while setting desktop wallpaper options");
-                console.log(error);
-                return cb(error);
-            }
-            console.log("Desktop wallpaper options set successfully");
             return cb();
         })
     }, (error) => {
@@ -112,8 +92,10 @@ console.log('New execution', new Date());
 
 got('https://apod.nasa.gov/apod/').then(res => {
     const $ = cheerio.load(res.body);
-    const aboutImage = `${$('center').eq(1).text().split('\n')[1].trim().split(' ').join('-')}.jpg`;
     const link = linkSplitter(res.body);
+    const aboutImage = `${$('center').eq(1).text().split('\n')[1].trim().split(' ').join('-')}.jpg`;
+    const escapedAboutImage = aboutImage.replace(/[^a-zA-Z0-9-_]/gi, '_').toLowerCase();
+
     if (!link) {
         console.log('Can t find an image, aborting', fullUrl);
     }
@@ -121,7 +103,7 @@ got('https://apod.nasa.gov/apod/').then(res => {
 
     console.log("downloading", fullUrl);
 
-    downloadImage(fullUrl, aboutImage);
+    downloadImage(fullUrl, escapedAboutImage);
 }).catch(error => {
     if (error) {
         process.stdout.write(error);
