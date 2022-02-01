@@ -32,7 +32,7 @@ $ cd ~/.bin/NWotD
 $ npm install
 ```
 
-Then you can setup the application to run every time you start your session:
+Then you can setup the application to run every time you start your session and once every day. The script will need sudo rights to execute properly as it creates a file in `/etc/cron.daily`.
 
 ```bash
 $ cd ~/.bin/NWotD
@@ -42,13 +42,6 @@ $ npm run post-install
 This will create a file `$HOME/.config/autostart/NWotD.desktop` that Gnome will use to execute the application on each startup.
 You should see a new entry in the `Startup Application Preferences` Gnome's application.
 
-*Note* If you don't shutdown you computer every day, you'll need to put this application in a daily cron job to change the wallpaper.
-To do so create a file `/etc/cron.daily/nasawallpaper` and make it executable. Inside put the following code:
+It will also create the file `/etc/cron.daily/NWotD` which will execute the script once a day.
 
-```bash
-#!/bin/bash
-
-node ~/.bin/NWotD/index.js
-```
-
-(Maybe I'll update the post-install script to do that too)
+By default all execution logs are stored in `/var/log/nwotd.log` but you can change the variable `LOG_FILE` in `./post-install.sh` to use another location for logs.
