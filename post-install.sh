@@ -19,3 +19,15 @@ Name=Nasa Wallpaper of the Day
 Comment[en_US]=Set up Nasa Pic of the day as Wallpaper
 Comment=Set up Nasa Pic of the day as Wallpaper
 EOF
+
+# Add the application to cron.daily
+CRON_DIR="/etc/cron.daily/"
+CRON_FILE="$CRON_DIR/NWotD"
+touch "$CRON_FILE"
+chmod +x "$CRON_FILE"
+
+cat > "$CRON_FILE" << EOF
+#!/bin/bash
+
+/usr/bin/node $PWD/index.js >> $LOG_FILE 2>&1
+EOF
