@@ -45,3 +45,16 @@ You should see a new entry in the `Startup Application Preferences` Gnome's appl
 It will also create the file `/etc/cron.daily/NWotD` which will execute the script once a day.
 
 By default all execution logs are stored in `/var/log/nwotd.log` but you can change the variable `LOG_FILE` in `./post-install.sh` to use another location for logs.
+
+# Configuration
+
+Edit the config file [config.js](./config.js) with the correct location for images.
+For the zoom background to work one need to set up a virtual background manually first.
+
+One can also disable some of the actions by changing the following configuration options:
+
+| Option                       | Result                                                                              |
+|------------------------------|-------------------------------------------------------------------------------------|
+| enableZoomBackground         | When `true`: Copy the downloaded image to `zoomBackgroundPath`                      |
+| enableDesktopWallpaper       | When `true`: Use `feh` to set the downloaded image as desktop backgound             |
+| enableOldWallpaperDeletion   | When `true`: Delete the downloaded images older tham 3 days in `wallpaperDirectory` |

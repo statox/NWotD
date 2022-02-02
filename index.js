@@ -6,9 +6,24 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 const https = require('https');
 
-const dir = process.env.HOME ? `${process.env.HOME}/.wallpaper/` : './.wallpaper';
+const {config} = require('./config');
+const TODAY_WP_PATH = `${config.wallpaperDirectory}/today_wallpaper`;
+
+const validateConfig = () => {
+    if (!config.wallpaperDirectory) {
+        console.log('wallpaperDirectory is not defined in config.js');
+        process.exit(1);
+    }
+
+    if (config.enableZoomBackground && !config.zoomBackgroundPath) {
+        console.log('enableZoomBackground is set to true but no zoomBackgroundPath is not defined');
+        process.exit(1);
+    }
+    console.log('Configuration valid');
+};
 
 const removeOldPictures = (cb) => {
+    const dir = config.wallpaperDirectory;
     const rmCommand = `find ${dir} -mtime +3 -delete`;
 
     exec(rmCommand, (error, _stdout, _stderr) => {
@@ -22,7 +37,6 @@ const removeOldPictures = (cb) => {
 
 // Use feh to set the background image
 const setWallpaper = (imagePath, cb) => {
-    const TODAY_WP_PATH = '/home/adrien/.wallpaper/today_wallpaper';
     const copyImageCommand = `cp ${imagePath} ${TODAY_WP_PATH}`;
     const setWallpaperCommand = `feh --bg-scale ${TODAY_WP_PATH}`;
 
@@ -54,7 +68,7 @@ const copyFile = ({src, dest}, cb) => {
 
 // To set the Zoom background we replace the image at the path already configured in zoom
 const setZoomBackground = (imagePath, cb) => {
-    const BACKGROUND_PATH = '/home/adrien/.zoom/data/VirtualBkgnd_Custom/{d04bd4b9-57d8-44a1-9cd7-31cea7945157}';
+    const BACKGROUND_PATH = config.zoomBackgroundPath;
     return copyFile({src: imagePath, dest: BACKGROUND_PATH}, cb);
 };
 
@@ -69,27 +83,29 @@ const linkSplitter = (data) => {
 
 // Download the image in the image directory
 const downloadImage = ({fullUrl, name}, cb) => {
+    const dir = config.wallpaperDirectory;
+    const imagePath = `${dir}/${name}`;
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
     }
-    const save = fs.createWriteStream(`${dir}${name}`);
+    const save = fs.createWriteStream(imagePath);
 
     https.get(fullUrl, (res, _cb) => {
-        console.log(`Saving image at ${dir}${name}`);
+        console.log(`Saving image at ${imagePath}`);
         res.pipe(save);
 
         save.on('finish', () => {
-            console.log(`Saved image at ${dir}${name}`);
+            console.log(`Saved image at ${imagePath}`);
             save.close((error) => {
                 if (error) {
                     return cb(error);
                 }
-                return cb(null, {imagePath: `${dir}${name}`});
+                return cb(null, {imagePath});
             });
         });
 
         save.on('error', () => {
-            console.log(`Error while saving image at ${dir}${name}`);
+            console.log(`Error while saving image at ${imagePath}`);
             return cb(error);
         });
     });
@@ -117,11 +133,11 @@ const getImageOfTheDayData = (cb) => {
 };
 
 console.log('New execution', new Date());
-
+validateConfig();
 async.auto(
     {
         imageData: (cb) => {
-            console.log('Downloading image data');
+            console.log('Downloading today image data');
             return getImageOfTheDayData(cb);
         },
         image: [
@@ -134,6 +150,10 @@ async.auto(
         setWallpaper: [
             'image',
             (results, cb) => {
+                if (!config.enableDesktopWallpaper) {
+                    console.log('Not setting wallpaper');
+                    return cb();
+                }
                 console.log('Setting wallpaper');
                 return setWallpaper(results.image.imagePath, cb);
             }
@@ -141,6 +161,10 @@ async.auto(
         setZoomBackground: [
             'setWallpaper',
             (results, cb) => {
+                if (!config.enableZoomBackground) {
+                    console.log('Not setting Zoom background');
+                    return cb();
+                }
                 console.log('Setting Zoom background');
                 return setZoomBackground(results.image.imagePath, cb);
             }
@@ -149,6 +173,10 @@ async.auto(
             'setWallpaper',
             'setZoomBackground',
             (_result, cb) => {
+                if (!config.enableOldWallpaperDeletion) {
+                    console.log('Not deleting previous wallpapers');
+                    return cb();
+                }
                 console.log('Delete previous wallpapers');
                 return removeOldPictures(cb);
             }
