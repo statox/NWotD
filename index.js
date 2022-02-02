@@ -25,7 +25,7 @@ const setWallpaper = (imagePath) => {
     console.log("setting wallpaper");
 
     const desktopCommand = `feh --bg-scale ${imagePath}`
-    const copyImage = `cp ${imagePath} /home/afabre/.wallpaper/today_wallpaper`;
+    const copyImage = `cp ${imagePath} /home/adrien/.wallpaper/today_wallpaper`;
 
     async.auto({
         desktopWallpaper: (cb) => exec(desktopCommand, (error, _stdout, _stderr) => {
@@ -58,6 +58,20 @@ const setWallpaper = (imagePath) => {
     });
 };
 
+const setZoomBackground = (imagePath) => {
+    console.log('Setting zoom background');
+    const BACKGROUND_PATH = '/home/adrien/.zoom/data/VirtualBkgnd_Custom/{d04bd4b9-57d8-44a1-9cd7-31cea7945157}';
+    const copyImage = `cp ${imagePath} ${BACKGROUND_PATH}`;
+    exec(copyImage, (error, _stdout, _stderr) => {
+        if (error) {
+            console.log("error while setting Zoom virtual background");
+            console.log(error);
+            return cb(error);
+        }
+        console.log("Zoom virtual background set successfully");
+    });
+}
+
 const linkSplitter = data => {
     try {
         return data.split('<a href="image')[1].split('"')[0];
@@ -79,6 +93,7 @@ const downloadImage = (imageSource, picture) => {
 
         save.on('finish', () => {
             setWallpaper(`${dir}${picture}`);
+            setZoomBackground(`${dir}${picture}`);
             save.close(cb);
         });
 
@@ -97,14 +112,14 @@ got('https://apod.nasa.gov/apod/').then(res => {
     const escapedAboutImage = aboutImage.replace(/[^a-zA-Z0-9-_]/gi, '_').toLowerCase();
 
     if (!link) {
-        console.log('Can t find an image, aborting', fullUrl);
+        return cb(new Error('Can t find an image, aborting'))
     }
     const fullUrl = `https://apod.nasa.gov/apod/image${link}`;
 
     console.log("downloading", fullUrl);
 
     downloadImage(fullUrl, escapedAboutImage);
-}).catch(error => {
+}).catch(( error ) => {
     if (error) {
         process.stdout.write(error);
     }
