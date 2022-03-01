@@ -31,3 +31,7 @@ cat > "$CRON_FILE" << EOF
 
 /usr/bin/node $PWD/index.js >> $LOG_FILE 2>&1
 EOF
+
+# TO READ /!\ I had an issue to make cron.daily work and simply used crontab -e and added this line
+# DISPLAY=:0 is important to solve "Can't open X display" errors with feh
+46 * * * * DISPLAY=:0 /path/to/node /path/to/NWotD/index.js >> /var/log/nwotd.log 2>&1
