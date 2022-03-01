@@ -9,38 +9,31 @@ This script reuses some code from [nasa-cli](https://github.com/xxczaki/nasa-cli
 This application is made to run with the following software installed:
 
  - npm
- - Gnome3
- - gsettings
+ - feh
 
-
-It uses the following gsettings entries to set up the gnome wallpaper and screensaver:
-
-```bash
-gsettings set org.gnome.desktop.background picture-uri
-gsettings set org.gnome.desktop.background picture-options
-gsettings set org.gnome.desktop.screensaver picture-uri
-gsettings set org.gnome.desktop.screensaver picture-options
-```
+It simply uses the `feh` command to set up the desktop wallpaper. For now this is only tested on I3WM but should work on other window managers like Gnome.
 
 # Installation
 
-Clone the depo and install the dependencies with `npm`
+Clone the repo and install the dependencies with `npm`
 
 ```bash
-$ git clone https://github.com/statox/NWotD ~/.bin/NWotD
-$ cd ~/.bin/NWotD
+$ git clone https://github.com/statox/NWotD
+$ cd NWotD
 $ npm install
 ```
 
 Then you can setup the application to run every time you start your session and once every day. The script will need sudo rights to execute properly as it creates a file in `/etc/cron.daily`.
 
 ```bash
-$ cd ~/.bin/NWotD
+$ cd NWotD
 $ npm run post-install
 ```
 
-This will create a file `$HOME/.config/autostart/NWotD.desktop` that Gnome will use to execute the application on each startup.
+This will create a file `$HOME/.config/autostart/NWotD.desktop` that GNOME will use to execute the application on each startup.
 You should see a new entry in the `Startup Application Preferences` Gnome's application.
+
+_This does not work on I3WM, one would need to add an `exec` command to the i3 config file to run the script on startup._
 
 It will also create the file `/etc/cron.daily/NWotD` which will execute the script once a day.
 
