@@ -67,10 +67,7 @@ deleteOldWallpapers() {
 
 echom "New execution"
 downloadImage
-newImage=$?
-if [ $newImage == 1 ]; then
-    setWallpaper
-    setZoomBackground
-    deleteOldWallpapers
-fi
+setWallpaper
+setZoomBackground
+deleteOldWallpapers
 echom 'Done'
