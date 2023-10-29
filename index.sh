@@ -2,7 +2,9 @@
 
 # Config
 WALLPAPER_DIR="$HOME/.wallpaper"
-ZOOM_BACKGROUND_PATH='/home/afabre/.zoom/data/VirtualBkgnd_Custom/{a9e6f18c-18d7-4d29-a4b9-758f3f87256b}';
+ZOOM_BACKGROUND_PATH="$HOME/.zoom/data/VirtualBkgnd_Custom/{a9e6f18c-18d7-4d29-a4b9-758f3f87256b}"
+APOD_URL="https://apod.nasa.gov/apod/"
+TODAY_WP_PATH="${WALLPAPER_DIR}/today_wallpaper";
 
 # Arguments
 nozoom=false
@@ -21,39 +23,53 @@ echom() {
     echo "nwotd [$(date +"%Y/%m/%d %H:%M:%S")] $*"
 }
 
-echom "New execution"
+downloadImage() {
+    apodPath=$(curl -s "$APOD_URL" | grep 'IMG SRC' | grep -o '".*"' | tr -d '"')
+    imageURL="${APOD_URL}/${apodPath}"
+    imageName=${imageURL//*\//} # Replace everything until last slash by nothing
 
-# Get image url
-APOD_URL="https://apod.nasa.gov/apod"
-apodPath=$(curl -s https://apod.nasa.gov/apod/ | grep 'IMG SRC' | grep -o '".*"' | tr -d '"')
-imageURL="${APOD_URL}/${apodPath}"
-imageName=${imageURL//*\//} # Replace everything until last slash by nothing
+    imagePath="${WALLPAPER_DIR}/${imageName}"
+    if [ -f "$imagePath" ]; then
+        echom "Image already exists $imagePath"
+        return 0
+    fi
 
-echom "url  $imageURL"
-echom "name $imageName"
+    echom "Download new image to $imagePath"
+    curl -s "$imageURL" > "$imagePath"
+    cp "$imagePath" "$TODAY_WP_PATH"
+    return 1
+}
 
-# Download image
-imagePath="${WALLPAPER_DIR}/${imageName}"
-curl -s "$imageURL" > "$imagePath"
-echom "path $imagePath"
+setWallpaper() {
+    if ( $nowallpaper ); then
+        return;
+    fi
 
-# Set wallpaper
-if ( ! $nowallpaper ); then
     echom 'Update wallpaper'
-    todayWPPath="${WALLPAPER_DIR}/today_wallpaper";
-    cp "$imagePath" "$todayWPPath"
-    feh --bg-scale "$todayWPPath"
-fi
+    feh --bg-scale "$TODAY_WP_PATH"
+}
 
-# Set zoom background
-if ( ! $nozoom ); then
+setZoomBackground() {
+    if ( $nozoom ); then
+        return;
+    fi
+
     echom 'Update zoom'
-    cp "$imagePath" "$ZOOM_BACKGROUND_PATH"
+    cp "$TODAY_WP_PATH" "$ZOOM_BACKGROUND_PATH"
+}
+
+deleteOldWallpapers() {
+    nbDeletions=$(find "$WALLPAPER_DIR" -mtime +1 | wc -l)
+    echom "Delete $nbDeletions files"
+    find "$WALLPAPER_DIR" -mtime +3 -delete
+}
+
+echom "New execution"
+downloadImage
+newImage=$?
+if [ $newImage == 1 ]; then
+    setWallpaper
+    setZoomBackground
+    deleteOldWallpapers
 fi
-
-# Delete old pictures
-nbDeletions=$(find "$WALLPAPER_DIR" -mtime +1 | wc -l)
-echom "$nbDeletions files to delete"
-find "$WALLPAPER_DIR" -mtime +1 -delete
-
 echom 'Done'
