@@ -3,7 +3,6 @@
 # Config
 WALLPAPER_DIR="$HOME/.wallpaper"
 ZOOM_BACKGROUND_PATH="$HOME/.zoom/data/VirtualBkgnd_Custom/{a9e6f18c-18d7-4d29-a4b9-758f3f87256b}"
-APOD_URL="https://apod.nasa.gov/apod/"
 TODAY_WP_PATH="${WALLPAPER_DIR}/today_wallpaper";
 
 # Arguments
@@ -18,6 +17,8 @@ do
             exit 2;;
     esac
 done
+
+APOD_URL="https://apod.nasa.gov/apod/"
 
 echom() {
     echo "nwotd [$(date +"%Y/%m/%d %H:%M:%S")] $*"

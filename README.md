@@ -1,53 +1,32 @@
-# Nasa Wallpaper of the Day
+# Nasa Wallpaper of the Day 🚀
 
-Set the Nasa Picture of the Day as your wallpaper!
+Set the [Nasa Picture of the Day](https://apod.nasa.gov/apod/astropix.html) as your wallpaper and zoom background!
 
-This script reuses some code from [nasa-cli](https://github.com/xxczaki/nasa-cli).
+## Requirements
 
-# Dependencies
+This script is made to run on linux. Tested only on Ubuntu >= `22.04` with [i3wm](https://i3wm.org/) >= `4.20.1`
 
-This application is made to run with the following software installed:
+- [`feh`](https://feh.finalrewind.org/) Used to set up the desktop wallpaper. For now this is only tested on i3 but should work on other window managers like Gnome.
+- [`zoom`](https://zoom.us/) This program can change the virtual background you use on zoom
 
- - npm
- - feh
+## Installation
 
-It simply uses the `feh` command to set up the desktop wallpaper. For now this is only tested on I3WM but should work on other window managers like Gnome.
+1. Clone the repo and run the `post-install.sh` script. The script will add a line to the current user's crontab to run NWotD every hour.
+1. Change the config in `index.sh`
+    1. `WALLPAPER_DIR` must be an existing directory. Last downloaded wallpapers are stored there.
+    1. `ZOOM_BACKGROUND_PATH` is the path to the virtual background file in zoom. You need to set a virtual background through the application first to create the image with a random name. Use this random name in the variable.
 
-# Installation
+## Startup configuration
 
-Clone the repo and install the dependencies with `npm`
+With i3 you can configure the script to run on start up by adding the following line in your `$HOME/.config/i3/config` file:
 
-```bash
-$ git clone https://github.com/statox/NWotD
-$ cd NWotD
-$ npm install
+```
+exec_always --no-startup-id /path/to/NWotD/index.sh >> /var/log/nwotd.log 2>&1
 ```
 
-Then you can setup the application to run every time you start your session and once every day. The script will need sudo rights to execute properly as it creates a file in `/etc/cron.daily`.
+## Usage
 
-```bash
-$ cd NWotD
-$ npm run post-install
-```
+The script supports some parameter to tweak its actions:
 
-This will create a file `$HOME/.config/autostart/NWotD.desktop` that GNOME will use to execute the application on each startup.
-You should see a new entry in the `Startup Application Preferences` Gnome's application.
-
-_This does not work on I3WM, one would need to add an `exec` command to the i3 config file to run the script on startup._
-
-It will also create the file `/etc/cron.daily/NWotD` which will execute the script once a day.
-
-By default all execution logs are stored in `/var/log/nwotd.log` but you can change the variable `LOG_FILE` in `./post-install.sh` to use another location for logs.
-
-# Configuration
-
-Edit the config file [config.js](./config.js) with the correct location for images.
-For the zoom background to work one need to set up a virtual background manually first.
-
-One can also disable some of the actions by changing the following configuration options:
-
-| Option                       | Result                                                                              |
-|------------------------------|-------------------------------------------------------------------------------------|
-| enableZoomBackground         | When `true`: Copy the downloaded image to `zoomBackgroundPath`                      |
-| enableDesktopWallpaper       | When `true`: Use `feh` to set the downloaded image as desktop backgound             |
-| enableOldWallpaperDeletion   | When `true`: Delete the downloaded images older tham 3 days in `wallpaperDirectory` |
+- `--nozoom` prevents changing the zoom wallpaper
+- `--nowallpaper` prevents change the desktop wallpaper
