@@ -28,5 +28,5 @@ exec_always --no-startup-id /path/to/NWotD/index.sh >> /var/log/nwotd.log 2>&1
 
 The script supports some parameter to tweak its actions:
 
-- `--nozoom` prevents changing the zoom wallpaper
-- `--nowallpaper` prevents change the desktop wallpaper
+- `-z` (no zoom) prevents changing the zoom wallpaper
+- `-w` (no wallpaper) prevents changing the desktop wallpaper

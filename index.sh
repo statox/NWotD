@@ -15,7 +15,7 @@ do
     case $name in
         'z') nozoom=true;;
         'w') nowallpaper=true;;
-        ?)   echo "Usage: [--nozoom] [--nowallpaper]"
+        ?)   echo "Usage: [-z] (no zoom) [-w] (no wallpaper)"
             exit 2;;
     esac
 done
