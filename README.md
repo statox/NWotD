@@ -8,6 +8,7 @@ This script is made to run on linux. Tested only on Ubuntu >= `22.04` with [i3wm
 
 - [`feh`](https://feh.finalrewind.org/) Used to set up the desktop wallpaper. For now this is only tested on i3, for Gnome `man feh` recommends using `gsettings set org.gnome.desktop.background picture-uri file:///path` instead.
 - [`zoom`](https://zoom.us/) This program can change the virtual background you use on zoom
+- [`jq`](https://jqlang.github.io/jq/) Used to parse the APOD API output. Could probably be replaced by a simple regex but eh 🤷
 
 ## Installation
 

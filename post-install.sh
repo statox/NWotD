@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+set -e
+
+which jq >/dev/null 2>/dev/null || (echo 'Missing dependency jq' && exit 1)
 
 # Add a line in the user's crontab to run the script periodically
 #

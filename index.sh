@@ -5,7 +5,10 @@ set -e
 # Config
 WALLPAPER_DIR="$HOME/.wallpaper"
 ZOOM_BACKGROUND_PATH="$HOME/.zoom/data/VirtualBkgnd_Custom/{a9e6f18c-18d7-4d29-a4b9-758f3f87256b}"
-TODAY_WP_PATH="${WALLPAPER_DIR}/today_wallpaper";
+TODAY_WP_PATH="${WALLPAPER_DIR}/today_wallpaper"
+APOD_API_KEY="DEMO_KEY" # A key can be generated at https://api.nasa.gov
+                        # But the DEMO_KEY allows for 50 calls/day and 30 calls/hour from the same IP
+                        # Which is good enough for a simple daily/hourly wallpaper change
 
 # Arguments
 nozoom=false
@@ -20,15 +23,14 @@ do
     esac
 done
 
-APOD_URL="https://apod.nasa.gov/apod/"
-
 echom() {
     echo "nwotd [$(date +"%Y/%m/%d %H:%M:%S")] $*"
 }
 
+APOD_API_URL="https://api.nasa.gov/planetary/apod?api_key=$APOD_API_KEY"
 downloadImage() {
-    apodPath=$(curl -s "$APOD_URL" | grep 'IMG SRC' | grep -o '".*"' | tr -d '"')
-    imageURL="${APOD_URL}/${apodPath}"
+    todayDetails=$(curl -s "$APOD_API_URL")
+    imageURL=$(jq -r '.url' <<< "$todayDetails" )
     imageName=${imageURL//*\//} # Replace everything until last slash by nothing
 
     imagePath="${WALLPAPER_DIR}/${imageName}"
