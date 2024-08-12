@@ -6,7 +6,7 @@ Set the [Nasa Picture of the Day](https://apod.nasa.gov/apod/astropix.html) as y
 
 This script is made to run on linux. Tested only on Ubuntu >= `22.04` with [i3wm](https://i3wm.org/) >= `4.20.1`
 
-- [`feh`](https://feh.finalrewind.org/) Used to set up the desktop wallpaper. For now this is only tested on i3 but should work on other window managers like Gnome.
+- [`feh`](https://feh.finalrewind.org/) Used to set up the desktop wallpaper. For now this is only tested on i3, for Gnome `man feh` recommends using `gsettings set org.gnome.desktop.background picture-uri file:///path` instead.
 - [`zoom`](https://zoom.us/) This program can change the virtual background you use on zoom
 
 ## Installation
