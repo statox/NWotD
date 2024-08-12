@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Config
 WALLPAPER_DIR="$HOME/.wallpaper"
 ZOOM_BACKGROUND_PATH="$HOME/.zoom/data/VirtualBkgnd_Custom/{a9e6f18c-18d7-4d29-a4b9-758f3f87256b}"
@@ -38,25 +40,28 @@ downloadImage() {
     echom "Download new image to $imagePath"
     curl -s "$imageURL" > "$imagePath"
     cp "$imagePath" "$TODAY_WP_PATH"
-    return 1
+    return 0
 }
 
 setWallpaper() {
     if ( $nowallpaper ); then
-        return;
+        echom '--nowallpaper provided dont set the wallpaper'
+        return 0;
     fi
 
     echom 'Update wallpaper'
     feh --bg-scale "$TODAY_WP_PATH"
+    return 0;
 }
 
 setZoomBackground() {
     if ( $nozoom ); then
-        return;
+        return 0;
     fi
 
     echom 'Update zoom'
     cp "$TODAY_WP_PATH" "$ZOOM_BACKGROUND_PATH"
+    return 0;
 }
 
 deleteOldWallpapers() {
@@ -65,7 +70,17 @@ deleteOldWallpapers() {
     find "$WALLPAPER_DIR" -mtime +3 -delete
 }
 
+checkWallpaperDirectory() {
+    if [ ! -d "${WALLPAPER_DIR}" ]; then
+        echom "Wallpaper directory doesn't exist $WALLPAPER_DIR"
+        echom "Please create it yourself or check the value of the \$WALLPAPER_DIR variable in the script"
+        return 1
+    fi
+    return 0
+}
+
 echom "New execution"
+checkWallpaperDirectory
 downloadImage
 setWallpaper
 setZoomBackground
