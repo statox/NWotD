@@ -27,6 +27,13 @@ echom() {
     echo "nwotd [$(date +"%Y/%m/%d %H:%M:%S")] $*"
 }
 
+fileIsImage() {
+    if file "$1" |grep -qE 'image|bitmap'; then
+        return 0;
+    fi
+    return 1;
+}
+
 APOD_API_URL="https://api.nasa.gov/planetary/apod?api_key=$APOD_API_KEY"
 downloadImage() {
     todayDetails=$(curl -s "$APOD_API_URL")
@@ -41,8 +48,14 @@ downloadImage() {
 
     echom "Download new image to $imagePath"
     curl -s "$imageURL" > "$imagePath"
-    cp "$imagePath" "$TODAY_WP_PATH"
-    return 0
+
+    if fileIsImage "$imagePath" ; then
+        cp "$imagePath" "$TODAY_WP_PATH"
+        return 0
+    fi
+
+    echo "$imagePath is not an image"
+    return 1;
 }
 
 setWallpaper() {
