@@ -3,12 +3,30 @@ set -e
 
 which jq >/dev/null 2>/dev/null || (echo 'Missing dependency jq' && exit 1)
 
+WALLPAPER_DIR="$HOME/.wallpaper"
+if [ ! -d "$WALLPAPER_DIR" ]; then
+    echo "Please create wallpaper directory: $WALLPAPER_DIR"
+    exit 1
+fi
+
 # Add a line in the user's crontab to run the script periodically
 #
 # This script should be idempotent and only add the line if it doesnt exist
 # (This is why we add a "header" line, to check if the script run already)
 
 LOG_FILE='/var/log/nwotd.log'
+
+if [ ! -f "$LOG_FILE" ]; then
+    echo "Please create log file: $LOG_FILE"
+    exit 1
+fi
+
+if [ ! -w "$LOG_FILE" ]; then
+    echo "Please make sure log file is writable: $LOG_FILE"
+    exit 1
+fi
+
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # TO READ /!\ I had an issue to make cron.daily work and simply used crontab -e and added this line
