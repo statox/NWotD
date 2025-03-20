@@ -34,6 +34,29 @@ fileIsImage() {
     return 1;
 }
 
+fileIsOld() {
+    local filepath="$1"
+
+    # Check if file exists and is accessible
+    if [ ! -f "$filepath" ]; then
+        return 0
+    fi
+
+    # Get modification time in seconds since epoch
+    local mod_time
+    mod_time=$(stat -c "%Y" "$filepath")
+    local now
+    now=$(date +%s)
+    local twenty_four_hours=$((12 * 60 * 60))
+
+    if (( now - mod_time > twenty_four_hours )); then
+        # File is more than 12 hours old
+        return 0
+    fi
+
+    return 1
+}
+
 APOD_API_URL="https://api.nasa.gov/planetary/apod?api_key=$APOD_API_KEY"
 downloadImage() {
     todayDetails=$(curl -s "$APOD_API_URL")
@@ -94,10 +117,22 @@ checkWallpaperDirectory() {
     return 0
 }
 
+stopIfNeeded() {
+    if ! fileIsOld "$TODAY_WP_PATH" ; then
+        echo "The wallpaper file is less than 12 hours old. Don't run"
+        exit 0
+    fi
+}
+
 echom "New execution"
+
 checkWallpaperDirectory
+stopIfNeeded
+
 downloadImage
+
 setWallpaper
 setZoomBackground
 deleteOldWallpapers
+
 echom 'Done'
