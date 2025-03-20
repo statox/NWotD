@@ -11,14 +11,19 @@ APOD_API_KEY="DEMO_KEY" # A key can be generated at https://api.nasa.gov
                         # Which is good enough for a simple daily/hourly wallpaper change
 
 # Arguments
-nozoom=false
-nowallpaper=false
-while getopts 'zw' name
+force=false
+do_zoom=false
+do_wallpaper=false
+while getopts 'fzw' name
 do
     case $name in
-        'z') nozoom=true;;
-        'w') nowallpaper=true;;
-        ?)   echo "Usage: [-z] (no zoom) [-w] (no wallpaper)"
+        'f') force=true;;
+        'z') do_zoom=true;;
+        'w') do_wallpaper=true;;
+        ?)   echo "Usage: [-f] force [-z] (update zoom) [-w] (update wallpaper)"
+             echo '      -f: By default the script doesnt run if $TODAY_WP_PATH is less than 12h old, -f prevents that'
+             echo '      -z: Update the $ZOOM_BACKGROUND_PATH file'
+             echo '      -w: Update the wallpaper with feh'
             exit 2;;
     esac
 done
@@ -47,9 +52,9 @@ fileIsOld() {
     mod_time=$(stat -c "%Y" "$filepath")
     local now
     now=$(date +%s)
-    local twenty_four_hours=$((12 * 60 * 60))
+    local twelve_four_hours=$((12 * 60 * 60))
 
-    if (( now - mod_time > twenty_four_hours )); then
+    if (( now - mod_time > twelve_four_hours )); then
         # File is more than 12 hours old
         return 0
     fi
@@ -90,8 +95,8 @@ downloadImage() {
 }
 
 setWallpaper() {
-    if ( $nowallpaper ); then
-        echom '--nowallpaper provided dont set the wallpaper'
+    if ( ! $do_wallpaper ); then
+        echom 'Skip wallpaper update'
         return 0;
     fi
 
@@ -101,7 +106,8 @@ setWallpaper() {
 }
 
 setZoomBackground() {
-    if ( $nozoom ); then
+    if ( ! $do_zoom ); then
+        echom 'Skip zoom update'
         return 0;
     fi
 
@@ -111,7 +117,7 @@ setZoomBackground() {
 }
 
 deleteOldWallpapers() {
-    nbDeletions=$(find "$WALLPAPER_DIR" -mtime +1 | wc -l)
+    nbDeletions=$(find "$WALLPAPER_DIR" -mtime +3 | wc -l)
     echom "Delete $nbDeletions files"
     find "$WALLPAPER_DIR" -mtime +3 -delete
 }
@@ -126,8 +132,12 @@ checkWallpaperDirectory() {
 }
 
 stopIfNeeded() {
+    if ( $force ); then
+        echom "Force mode specified. Dont check if file is old"
+        return
+    fi
     if ! fileIsOld "$TODAY_WP_PATH" ; then
-        echo "The wallpaper file is less than 12 hours old. Don't run"
+        echom "The wallpaper file is less than 12 hours old. Don't run"
         exit 0
     fi
 }

@@ -31,7 +31,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # TO READ /!\ I had an issue to make cron.daily work and simply used crontab -e and added this line
 # DISPLAY=:0 is important to solve "Can't open X display" errors with feh
-command="40 * * * * DISPLAY=:0 $SCRIPT_DIR/index.sh >> $LOG_FILE 2>&1"
+command="40 * * * * DISPLAY=:0 $SCRIPT_DIR/index.sh -w >> $LOG_FILE 2>&1"
 header='# NWotD - Update wallpaper'
 tmpFile='/tmp/crontab_tmp'
 

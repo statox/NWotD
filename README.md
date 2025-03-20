@@ -4,11 +4,11 @@ Set the [Nasa Picture of the Day](https://apod.nasa.gov/apod/astropix.html) as y
 
 ## Requirements
 
-This script is made to run on linux. Tested only on Ubuntu >= `22.04` with [i3wm](https://i3wm.org/) >= `4.20.1`
+This script is made to run on linux. Tested only on Ubuntu >= `24.04` with [i3wm](https://i3wm.org/) >= `4.23`
 
-- [`feh`](https://feh.finalrewind.org/) Used to set up the desktop wallpaper. For now this is only tested on i3, for Gnome `man feh` recommends using `gsettings set org.gnome.desktop.background picture-uri file:///path` instead.
-- [`zoom`](https://zoom.us/) This program can change the virtual background you use on zoom
 - [`jq`](https://jqlang.github.io/jq/) Used to parse the APOD API output. Could probably be replaced by a simple regex but eh 🤷
+- (Optional) [`feh`](https://feh.finalrewind.org/) Used to set up the desktop wallpaper. For now this is only tested on i3, for Gnome `man feh` recommends using `gsettings set org.gnome.desktop.background picture-uri file:///path` instead.
+- (Optional) [`zoom`](https://zoom.us/) This program can change the virtual background you use on zoom
 
 ## Installation
 
@@ -22,12 +22,13 @@ This script is made to run on linux. Tested only on Ubuntu >= `22.04` with [i3wm
 With i3 you can configure the script to run on start up by adding the following line in your `$HOME/.config/i3/config` file:
 
 ```
-exec_always --no-startup-id /path/to/NWotD/index.sh >> /var/log/nwotd.log 2>&1
+exec_always --no-startup-id /path/to/NWotD/index.sh -w >> /var/log/nwotd.log 2>&1
 ```
 
 ## Usage
 
 The script supports some parameter to tweak its actions:
 
-- `-z` (no zoom) prevents changing the zoom wallpaper
-- `-w` (no wallpaper) prevents changing the desktop wallpaper
+- `-f` (`force`) By default the script doesnt run if `$TODAY_WP_PATH` is less than 12h old, `-f` prevents that'
+- `-z` (`zoom`) Update the `$ZOOM_BACKGROUND_PATH` file'
+- `-w` (`wallpaper`) Update the wallpaper with feh'
