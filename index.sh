@@ -60,6 +60,15 @@ fileIsOld() {
 APOD_API_URL="https://api.nasa.gov/planetary/apod?api_key=$APOD_API_KEY"
 downloadImage() {
     todayDetails=$(curl -s "$APOD_API_URL")
+    media_type=$(jq -r '.media_type' <<< "$todayDetails" )
+    tries=1
+    while [ "$media_type" != 'image' ] && [ $tries -lt 3 ]; do
+        ((tries++))
+        echo 'Today\s media is not an image, fetching a random one'
+        APOD_API_URL="https://api.nasa.gov/planetary/apod?api_key=$APOD_API_KEY&count=1"
+        todayDetails=$(curl -s "$APOD_API_URL" | jq first)
+        media_type=$(jq -r '.media_type' <<< "$todayDetails" )
+    done
     imageURL=$(jq -r '.url' <<< "$todayDetails" )
     imageName=${imageURL//*\//} # Replace everything until last slash by nothing
 
