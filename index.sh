@@ -75,11 +75,10 @@ downloadImage() {
     imagePath="${WALLPAPER_DIR}/${imageName}"
     if [ -f "$imagePath" ]; then
         echom "Image already exists $imagePath"
-        return 0
+    else
+        echom "Download new image to $imagePath"
+        curl -s "$imageURL" > "$imagePath"
     fi
-
-    echom "Download new image to $imagePath"
-    curl -s "$imageURL" > "$imagePath"
 
     if fileIsImage "$imagePath" ; then
         cp "$imagePath" "$TODAY_WP_PATH"
