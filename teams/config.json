@@ -1,0 +1,18 @@
+{
+    "videoBackgroundImages": [
+        {
+            "filetype": "jpg",
+            "id": "Custom_bg01",
+            "name": "Aerial photography of rock formation",
+            "src": "/evergreen-assets/backgroundimages/visar-neziri-CAQvwCoHLhw-unsplash.jpg",
+            "thumb_src": "/evergreen-assets/backgroundimages/visar-neziri-CAQvwCoHLhw-unsplash-thumb.jpg"
+        },
+        {
+            "filetype": "jpg",
+            "id": "NWotD_01",
+            "name": "The Nasa Astronomy Picture of the Day",
+            "src": "/evergreen-assets/backgroundimages/apod",
+            "thumb_src": "/evergreen-assets/backgroundimages/apod"
+        }
+    ]
+}
